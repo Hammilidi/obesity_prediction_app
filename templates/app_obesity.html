@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction - Health AI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .input-modern { transition: all 0.3s ease; }
+        .input-modern:focus { transform: translateY(-1px); box-shadow: 0 8px 25px -8px rgba(99, 102, 241, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary:hover { background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%); transform: translateY(-2px); }
+        .result-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(20px); opacity: 0; }
+        .result-card.show { transform: translateY(0); opacity: 1; }
+        .floating-element { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-card shadow-lg mb-8 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800">Health AI</h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span id="username" class="text-gray-600 font-medium"></span>
+                    <a href="/history" class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors">Historique</a>
+                    <a href="/admin" id="adminLink" class="text-purple-600 hover:text-purple-800 font-medium transition-colors hidden">Administration</a>
+                    <button onclick="logout()" class="text-red-500 hover:text-red-700 font-medium transition-colors">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="space-y-6">
+                <div class="glass-card rounded-2xl shadow-xl p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Analyse de santé</h2>
+                    </div>
+                    
+                    <form id="predictionForm" class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Genre</label>
+                                <select name="gender" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                    <option value="">Sélectionner</option>
+                                    <option value="Female">Femme</option>
+                                    <option value="Male">Homme</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Âge</label>
+                                <input type="number" name="age" required min="1" max="120"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="25">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Taille (m)</label>
+                                <input type="number" name="height" required step="0.01" min="1" max="2.5"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="1.75">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Poids (kg)</label>
+                                <input type="number" name="weight" required step="0.1" min="20" max="300"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="70">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Antécédents familiaux de surpoids</label>
+                            <select name="family_history_with_overweight" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Sélectionner</option>
+                                <option value="yes">Oui</option>
+                                <option value="no">Non</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Consommation fréquente d'aliments riches en calories</label>
+                            <select name="favc" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Sélectionner</option>
+                                <option value="yes">Oui</option>
+                                <option value="no">Non</option>
+                            </select>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Fréquence légumes (1-3)</label>
+                                <input type="number" name="fcvc" required step="0.1" min="1" max="3"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="2.0">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Repas principaux (1-4)</label>
+                                <input type="number" name="ncp" required step="0.1" min="1" max="4"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="3.0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Grignotage entre repas</label>
+                            <select name="caec" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Sélectionner</option>
+                                <option value="no">Jamais</option>
+                                <option value="Sometimes">Parfois</option>
+                                <option value="Frequently">Fréquemment</option>
+                                <option value="Always">Toujours</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Fumeur</label>
+                            <select name="smoke" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Sélectionner</option>
+                                <option value="yes">Oui</option>
+                                <option value="no">Non</option>
+                            </select>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Eau quotidienne (L)</label>
+                                <input type="number" name="ch2o" required step="0.1" min="1" max="3"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="2.0">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Surveillance calories</label>
+                                <select name="scc" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                    <option value="">Sélectionner</option>
+                                    <option value="yes">Oui</option>
+                                    <option value="no">Non</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Activité physique (0-3)</label>
+                                <input type="number" name="faf" required step="0.1" min="0" max="3"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="1.0">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Temps d'écran (h/jour)</label>
+                                <input type="number" name="tue" required step="0.1" min="0" max="2"
+                                       class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                       placeholder="1.0">
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Consommation d'alcool</label>
+                                <select name="calc" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                    <option value="">Sélectionner</option>
+                                    <option value="no">Jamais</option>
+                                    <option value="Sometimes">Parfois</option>
+                                    <option value="Frequently">Fréquemment</option>
+                                    <option value="Always">Toujours</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Mode de transport</label>
+                                <select name="mtrans" required class="input-modern w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                    <option value="">Sélectionner</option>
+                                    <option value="Walking">À pied</option>
+                                    <option value="Bike">Vélo</option>
+                                    <option value="Public_Transportation">Transport public</option>
+                                    <option value="Automobile">Automobile</option>
+                                    <option value="Motorbike">Moto</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl mt-6">
+                            Analyser mes données
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="space-y-6">
+                <div class="glass-card rounded-2xl shadow-xl p-8 min-h-96">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800">Résultats d'analyse</h2>
+                    </div>
+                    
+                    <div id="results" class="result-card hidden">
+                        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-6 border border-indigo-100">
+                            <div class="text-center">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Classification prédite</h3>
+                                <p id="predictionClass" class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2"></p>
+                                <p class="text-gray-600">Confiance: <span id="confidence" class="font-semibold text-indigo-600"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">Distribution des probabilités</h3>
+                            <div class="bg-white rounded-xl p-4 border border-gray-100">
+                                <canvas id="probabilityChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="probabilityBars" class="space-y-3"></div>
+                    </div>
+                    
+                    <div id="loading" class="hidden flex flex-col items-center justify-center py-12">
+                        <div class="relative">
+                            <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                            <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-purple-600 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+                        </div>
+                        <p class="mt-4 text-gray-600 font-medium">Analyse en cours...</p>
+                    </div>
+                    
+                    <div id="noResults" class="flex flex-col items-center justify-center py-12 text-gray-500">
+                        <div class="floating-element w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mb-6">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-lg font-medium">Remplissez le formulaire</p>
+                        <p>Les résultats de votre analyse apparaîtront ici</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="fixed top-20 right-6 hidden z-50 max-w-sm"></div>
+
+    <script>
+        let chart = null;
+
+        // Vérifier l'authentification au chargement
+        window.onload = function() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            fetchUserInfo();
+        };
+
+        async function fetchUserInfo() {
+            try {
+                const response = await fetch('/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('username').textContent = user.username;
+                    
+                    if (user.is_admin) {
+                        document.getElementById('adminLink').classList.remove('hidden');
+                    }
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des infos utilisateur:', error);
+                logout();
+            }
+        }
+
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Afficher le loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('noResults').classList.add('hidden');
+            
+            const formData = new FormData(e.target);
+            const data = {
+                gender: formData.get('gender'),
+                age: parseFloat(formData.get('age')),
+                height: parseFloat(formData.get('height')),
+                weight: parseFloat(formData.get('weight')),
+                family_history_with_overweight: formData.get('family_history_with_overweight'),
+                favc: formData.get('favc'),
+                fcvc: parseFloat(formData.get('fcvc')),
+                ncp: parseFloat(formData.get('ncp')),
+                caec: formData.get('caec'),
+                smoke: formData.get('smoke'),
+                ch2o: parseFloat(formData.get('ch2o')),
+                scc: formData.get('scc'),
+                faf: parseFloat(formData.get('faf')),
+                tue: parseFloat(formData.get('tue')),
+                calc: formData.get('calc'),
+                mtrans: formData.get('mtrans')
+            };
+            
+            try {
+                const response = await fetch('/prediction/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                
+                if (response.ok) {
+                    displayResults(result);
+                    showAlert('Analyse complétée avec succès !', 'success');
+                } else {
+                    showAlert(result.detail || 'Erreur lors de l\'analyse', 'error');
+                    document.getElementById('noResults').classList.remove('hidden');
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('noResults').classList.remove('hidden');
+                showAlert('Erreur de connexion au serveur', 'error');
+            }
+        });
+
+        function displayResults(result) {
+            document.getElementById('predictionClass').textContent = result.predicted_class;
+            document.getElementById('confidence').textContent = `${(result.confidence * 100).toFixed(1)}%`;
+            
+            // Créer le graphique des probabilités
+            createProbabilityChart(result.probabilities);
+            
+            // Afficher les barres de probabilité
+            displayProbabilityBars(result.probabilities);
+            
+            // Afficher les résultats avec animation
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('hidden');
+            setTimeout(() => resultsDiv.classList.add('show'), 100);
+        }
+
+        function createProbabilityChart(probabilities) {
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const labels = Object.keys(probabilities);
+            const values = Object.values(probabilities).map(v => v * 100);
+            
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#f5576c',
+                            '#4facfe',
+                            '#43e97b',
+                            '#fa709a'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayProbabilityBars(probabilities) {
+            const container = document.getElementById('probabilityBars');
+            container.innerHTML = '';
+            
+            // Trier par probabilité décroissante
+            const sorted = Object.entries(probabilities).sort((a, b) => b[1] - a[1]);
+            
+            sorted.forEach(([category, probability], index) => {
+                const percentage = (probability * 100).toFixed(1);
+                const isTop = index === 0;
+                
+                const bar = document.createElement('div');
+                bar.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-semibold ${isTop ? 'text-indigo-600' : 'text-gray-700'}">${category}</span>
+                        <span class="text-sm font-bold ${isTop ? 'text-indigo-600' : 'text-gray-600'}">${percentage}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="${isTop ? 'bg-gradient-to-r from-indigo-500 to-purple-500' : 'bg-gray-400'} h-3 rounded-full transition-all duration-1000 ease-out" 
+                             style="width: 0%"></div>
+                    </div>
+                `;
+                bar.className = 'mb-4';
+                container.appendChild(bar);
+                
+                // Animer la barre
+                setTimeout(() => {
+                    bar.querySelector('.h-3').style.width = `${percentage}%`;
+                }, index * 200);
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `fixed top-20 right-6 z-50 max-w-sm p-4 rounded-xl shadow-lg transition-all duration-300 ${
+                type === 'success' 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+            }`;
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alert.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

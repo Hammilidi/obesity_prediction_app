@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obesity Prediction API</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .flow-animation { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <div class="gradient-bg min-h-screen relative overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+        
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white bg-opacity-10 rounded-full flow-animation"></div>
+        <div class="absolute top-40 right-20 w-16 h-16 bg-white bg-opacity-10 rounded-full flow-animation" style="animation-delay: -2s;"></div>
+        <div class="absolute bottom-40 left-20 w-12 h-12 bg-white bg-opacity-10 rounded-full flow-animation" style="animation-delay: -4s;"></div>
+        
+        <div class="relative z-10 flex items-center justify-center min-h-screen">
+            <div class="text-center text-white px-6 max-w-4xl mx-auto">
+                <div class="inline-block p-4 bg-white bg-opacity-20 rounded-2xl backdrop-blur-sm mb-8">
+                    <h1 class="text-6xl font-bold mb-4">Health AI</h1>
+                    <p class="text-xl opacity-90">Prédiction intelligente du risque d'obésité</p>
+                </div>
+                
+                <p class="text-lg mb-12 max-w-2xl mx-auto opacity-90 leading-relaxed">
+                    Une solution complète utilisant l'intelligence artificielle pour analyser vos données de santé 
+                    et prédire avec précision les risques d'obésité.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/login" class="bg-white text-gray-800 font-semibold py-4 px-8 rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        Se connecter
+                    </a>
+                    <a href="/register" class="border-2 border-white text-white font-semibold py-4 px-8 rounded-xl hover:bg-white hover:text-gray-800 transition-all duration-300">
+                        Créer un compte
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="w-6 h-10 border-2 border-white rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-white rounded-full mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Pourquoi choisir Health AI ?</h2>
+                <div class="w-24 h-1 bg-indigo-600 mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="card-hover bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">IA Avancée</h3>
+                    <p class="text-gray-600">Modèle Random Forest optimisé pour des prédictions précises et fiables</p>
+                </div>
+                
+                <div class="card-hover bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Sécurisé</h3>
+                    <p class="text-gray-600">Authentification JWT et protection complète de vos données personnelles</p>
+                </div>
+                
+                <div class="card-hover bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Suivi Complet</h3>
+                    <p class="text-gray-600">Historique détaillé avec visualisations pour suivre votre évolution</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Comment ça fonctionne</h2>
+                <div class="w-24 h-1 bg-indigo-600 mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Inscription</h3>
+                        <p class="text-gray-600 text-sm">Créez votre compte sécurisé en quelques clics</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Connexion</h3>
+                        <p class="text-gray-600 text-sm">Accédez à votre espace personnel</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Analyse</h3>
+                        <p class="text-gray-600 text-sm">Saisissez vos données de santé</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold">4</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Résultats</h3>
+                        <p class="text-gray-600 text-sm">Consultez vos prédictions et recommandations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6">Prêt à commencer ?</h2>
+                <p class="text-xl text-gray-600 mb-8">Rejoignez des milliers d'utilisateurs qui font confiance à Health AI pour surveiller leur santé</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                    <a href="/register" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        Commencer maintenant
+                    </a>
+                    <a href="/docs" class="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300">
+                        Documentation API
+                    </a>
+                </div>
+                
+                <a href="/api/health" class="text-gray-500 hover:text-indigo-600 text-sm transition-colors">
+                    Vérifier le statut de l'API
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">© 2025 Health AI - by YONLI Fidèle</p>
+        </div>
+    </footer>
+</body>
+</html>

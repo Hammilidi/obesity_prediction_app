@@ -1,0 +1,37 @@
+classDiagram
+    class User {
+        +Integer id
+        +String username
+        +String email
+        +String hashed_password
+        +Boolean is_admin
+        +Boolean is_active
+        +DateTime created_at
+    }
+
+    class Prediction {
+        +Integer id
+        +Integer user_id
+        +String gender
+        +Float age
+        +Float height
+        +Float weight
+        +String family_history_with_overweight
+        +String favc
+        +Float fcvc
+        +Float ncp
+        +String caec
+        +String smoke
+        +Float ch2o
+        +String scc
+        +Float faf
+        +Float tue
+        +String calc
+        +String mtrans
+        +String predicted_class
+        +Float confidence
+        +String probabilities
+        +DateTime created_at
+    }
+
+    User "1" --> "many" Prediction : has

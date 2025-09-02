@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:17-alpine
+    container_name: health_ai_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: health_ai_db
+      POSTGRES_USER: health_ai_user
+      POSTGRES_PASSWORD: health_ai_password
+      LANG: en_US.utf8
+      LC_ALL: en_US.utf8
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - health_ai_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U health_ai_user -d health_ai_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Application FastAPI
+  health_ai_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: health_ai_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Configuration DB
+      DATABASE_URL: postgresql://health_ai_user:health_ai_password@postgres:5432/health_ai_db
+      
+      # JWT
+      JWT_SECRET_KEY: your-super-secret-jwt-key-change-this-in-production
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+      
+      # Application
+      APP_NAME: Health AI
+      APP_VERSION: 1.0.0
+      DEBUG: false
+      ENVIRONMENT: production
+      
+      # Modèles ML
+      MODEL_PATH: /app/models/model.pkl
+      SCALER_PATH: /app/models/scaler.pkl
+      LABEL_ENCODER_PATH: /app/models/label_encoders.pkl
+      
+      # Logs
+      LOG_LEVEL: INFO
+      LOG_FILE: /app/logs/app.log
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - health_ai_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+
+networks:
+  health_ai_network:
+    driver: bridge
