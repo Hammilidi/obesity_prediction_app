@@ -6,7 +6,7 @@ from sqlalchemy.pool import StaticPool
 import os
 import tempfile
 
-from main import app
+from app import app
 from database.database import get_db, Base
 from database.models import User, Prediction
 # from auth.password_utils import hash_password

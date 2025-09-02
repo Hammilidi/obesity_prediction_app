@@ -13,11 +13,22 @@ from api import prediction_routes, admin_routes, metrics_routes
 from auth.jwt_handler import get_current_user
 from schemas.prediction_schema import PredictionInput
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 # Créer l'application FastAPI
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
     description="API de prédiction d'obésité avec authentification JWT"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Créer les tables au démarrage
@@ -73,4 +84,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=7860, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=True)

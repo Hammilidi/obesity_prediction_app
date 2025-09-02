@@ -89,5 +89,3 @@ models/
 tmp/
 temp/
 .pytest_cache/
-.conftest.py
-test_*

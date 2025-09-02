@@ -33,7 +33,7 @@
             </div>
 
             <!-- Register Form -->
-            <form id="registerForm" class="space-y-5">
+            <form id="registerForm" method="post" action="/auth/register" class="space-y-5">
                 <div class="space-y-1">
                     <label for="username" class="block text-sm font-medium text-gray-700">
                         Nom d'utilisateur
@@ -70,13 +70,13 @@
                            placeholder="Confirmez votre mot de passe">
                 </div>
 
-                <div class="flex items-start space-x-3 py-2">
+                <!-- <div class="flex items-start space-x-3 py-2">
                     <input type="checkbox" id="terms" required 
                            class="mt-1 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                     <label for="terms" class="text-sm text-gray-600">
                         J'accepte les conditions d'utilisation et la politique de confidentialité
                     </label>
-                </div>
+                </div> -->
 
                 <button type="submit" 
                         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
@@ -125,29 +125,24 @@
                 return;
             }
             
-            if (password.length < 6) {
-                showAlert('Le mot de passe doit contenir au moins 6 caractères', 'error');
-                return;
-            }
-            
             try {
                 const response = await fetch('/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, email, password })
+                    body: JSON.stringify({ username, email, password, confirm_password: confirmPassword })
                 });
                 
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showAlert('Compte créé avec succès ! Redirection vers la connexion...', 'success');
+                    showAlert('Inscription réussie ! Vous pouvez maintenant vous connecter.', 'success');
                     setTimeout(() => {
                         window.location.href = '/login';
                     }, 2000);
                 } else {
-                    showAlert(data.detail || 'Erreur lors de la création du compte', 'error');
+                    showAlert(data.detail || 'Erreur lors de l\'inscription', 'error');
                 }
             } catch (error) {
                 showAlert('Erreur de connexion au serveur', 'error');
@@ -156,11 +151,7 @@
 
         function showAlert(message, type) {
             const alert = document.getElementById('alert');
-            alert.className = `mt-6 rounded-xl p-4 transition-all duration-300 ${
-                type === 'success' 
-                    ? 'bg-green-50 text-green-700 border border-green-200' 
-                    : 'bg-red-50 text-red-700 border border-red-200'
-            }`;
+            alert.className = `p-4 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
             alert.textContent = message;
             alert.classList.remove('hidden');
             
@@ -168,3 +159,6 @@
                 alert.classList.add('hidden');
             }, 5000);
         }
+    </script>
+</body>
+</html>
